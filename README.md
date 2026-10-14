@@ -2,10 +2,78 @@
 
 > Luôn chạy lệnh trong thư mục có `package.json` (kiểm tra: `dir package.json`).
 
+## Đọc trước khi chạy — lệnh nào dùng được ngay?
+
+README có cả hướng dẫn sử dụng code hiện có và bài hướng dẫn tự tạo file mới. Không chạy lần lượt mọi khối lệnh từ trên xuống: các terminal server phải giữ mở, lệnh tạo lỗi demo sẽ cố ý FAIL, còn code JavaScript/JSON/YAML phải lưu vào file chứ không dán vào terminal.
+
+| Lệnh | Trạng thái trên nhánh main lúc rà soát |
+|---|---|
+| `npm run test:e2e` | Đã có script và 16 test |
+| `npm run test:visual` | Đã có 3 test; lần đầu cần tạo và xem ảnh chuẩn |
+| `npm run api`, `npm run test:load` | Đã có; cần cài k6 và bật API ở terminal riêng |
+| `npm run report` | Đã có; cần chạy Playwright trước để có báo cáo |
+| `npm run test:unit` | Chưa có script; phải làm các bước tạo file và thêm script ở bài Unit trước |
+| `node --test tests/unit/date-validator.test.js` | Chỉ chạy sau khi đã tạo file unit theo hướng dẫn |
+| `node tests/mobile/android.mjs` | Chỉ chạy sau khi tạo file, cài WebdriverIO, thiết lập Android và bật Appium |
+| `npx playwright test tests/e2e/ai-generated.spec.ts --headed` | Chỉ chạy sau khi AI đã tạo file đó |
+| GitHub Actions / MCP | Cần tự tạo file cấu hình theo bài hướng dẫn; chưa được cài chỉ bằng việc cập nhật README |
+
+### Kiểm tra đúng thư mục và nhánh
+
+Trong terminal VS Code, chạy:
+
+```powershell
+Get-Location
+Test-Path .\package.json
+git branch --show-current
+git status
+npm run
+```
+
+`Test-Path` phải trả `True`. Nếu `False`, mở đúng thư mục project chứa `package.json`; ZIP cũ có thể có hai lớp thư mục cùng tên. `npm run` liệt kê script thực sự có trên máy bạn.
+
+Nếu làm với bản clone Git và muốn lấy README mới trên main, chỉ chuyển nhánh/pull khi đã lưu hoặc commit thay đổi của mình:
+
+```powershell
+git switch main
+git pull --ff-only
+```
+
+Nếu dùng ZIP tải về thì không dùng `git pull`; tải bản ZIP mới hoặc tự cập nhật file cần thiết. Không xóa thay đổi cá nhân để ép pull.
+
+### Chạy E2E trước để kiểm tra môi trường
+
+Cài Node.js LTS nếu chưa có, mở lại VS Code, rồi chạy từng dòng:
+
+```powershell
+node -v
+npm -v
+npm ci
+npx playwright install chromium
+npm run test:e2e
+```
+
+Mong đợi 16 passed nếu bộ E2E hiện có chạy thành công. Xem trình duyệt bằng `npm run test:e2e -- --headed`.
+
+- Nếu PowerShell báo `npm.ps1 cannot be loaded ... running scripts is disabled`: dùng terminal **Command Prompt** trong VS Code, hoặc thay `npm` bằng `npm.cmd` và `npx` bằng `npx.cmd` trong các lệnh. Không cần đổi execution policy chỉ để chạy npm.
+- Nếu `npm ci` báo thiếu/không đồng bộ lockfile: xác nhận đang ở đúng project. Nếu bạn chủ động sửa dependencies, dùng `npm install` để cập nhật lockfile, rồi commit cả `package.json` và `package-lock.json`.
+- Nếu chỉ `npm ci` báo lỗi tải package, xem dòng lỗi đầu tiên (mạng/registry/phiên bản/quyền truy cập); không thể sửa chỉ bằng cách cài browser.
+- Nếu `Port 5173 is already in use`: kiểm tra terminal Vite đang chạy. Nếu đúng project thì dùng lại; nếu đang chạy project khác, dừng server đó bằng Ctrl+C rồi chạy lại test. Không đổi cổng tùy ý vì cấu hình test dùng 5173.
+- Nếu `EADDRINUSE` trên 3001: API có thể đã chạy ở terminal khác; không mở thêm API trùng cổng.
+- Nếu `k6 is not recognized`: cài k6 theo phần cài đặt rồi đóng/mở lại terminal.
+- Nếu `Missing script: test:unit`: làm bước thêm script trong bài Unit; pull README không tự thêm script.
+- Nếu `Could not find ...date-validator.test.js` hoặc `Cannot find module ...android.mjs`: file bài thực hành chưa được tạo hoặc bạn đang đứng sai thư mục.
+- Nếu visual FAIL: đọc diff trước, không update baseline chỉ để biến lỗi thành PASS.
+- Dùng các lệnh có phạm vi `npm run test:e2e` và `npm run test:visual`. Sau khi thêm test Node, lệnh Playwright không có bộ lọc `npx playwright test` có thể đọc nhầm file `.test.js` của Node.
+
+Khi cần hỗ trợ, gửi nguyên câu lệnh đã chạy và toàn bộ lỗi trong terminal; chỉ thông báo “không chạy được” chưa đủ xác định lỗi trên máy.
+
+
+
 ## Cài đặt (1 lần)
 
 ```powershell
-winget install OpenJS.NodeJS.LTS
+winget install --id OpenJS.NodeJS.LTS --exact --source winget
 winget install k6 --source winget
 # Đóng và mở lại terminal
 npm ci
@@ -172,7 +240,13 @@ CI/CD và AI-assisted là cách hỗ trợ/tự động hóa kiểm thử, khôn
 
 Dùng test runner tích hợp của Node.js, không cần cài Jest/Vitest. Dùng Node.js 22.12 trở lên cho lộ trình này; kiểm tra bằng `node -v`.
 
-**Bước 1.** Tạo thư mục `tests/unit`, tạo file `tests/unit/date-validator.test.js`:
+**Bước 1.** Tạo thư mục bằng PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force tests/unit
+```
+
+Trong VS Code tạo file `tests/unit/date-validator.test.js`, dán và lưu đoạn JavaScript dưới đây vào file (không dán vào terminal):
 
 ```javascript
 import test from 'node:test';
@@ -220,7 +294,13 @@ node --test tests/unit/date-validator.test.js
 
 Mong đợi: 9 test pass, 0 fail. Nếu lỗi import, kiểm tra đúng tên file và đường dẫn.
 
-**Bước 3.** Tùy chọn thêm vào object `scripts` của `package.json` (giữ các script cũ, chú ý dấu phẩy):
+**Bước 3.** Nếu muốn dùng `npm run test:unit`, bắt buộc thêm script sau. Có thể dùng lệnh dưới đây để thêm đúng JSON (chạy trong thư mục project):
+
+```powershell
+npm pkg set "scripts.test:unit=node --test tests/unit/date-validator.test.js"
+```
+
+Script được thêm vào object `scripts` của `package.json` là:
 
 ```json
 "test:unit": "node --test tests/unit/date-validator.test.js"
