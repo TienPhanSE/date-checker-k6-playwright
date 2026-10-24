@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="trace">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/test-results/visual-date-checker-invalid-date-result-chromium/trace.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

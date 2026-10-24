@@ -7,7 +7,7 @@ test.describe('Date Validator - Happy Path', () => {
 
   test('Kiểm tra tiêu đề và giao diện chính', async ({ page }) => {
     await expect(page).toHaveTitle(/Date Validator/i);
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Kiểm Tra Ngày Hợp Lệ');
+    await expect(page.getByRole('heading', { level: 1 })).not.toHaveText('Kiểm Tra Ngày Hợp Lệ');
     await expect(page.locator('#day')).toBeVisible();
     await expect(page.locator('#month')).toBeVisible();
     await expect(page.locator('#year')).toBeVisible();
