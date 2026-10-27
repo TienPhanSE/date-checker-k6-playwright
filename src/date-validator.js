@@ -17,6 +17,38 @@ export function getMaxDaysInMonth(month, year) {
   return 0;
 }
 
+/**
+ * DayInMonth / DaysInMonth - Hàm kiểm tra số ngày trong tháng chuẩn SWT301 Lab 2 & Lab 3
+ * @param {number|string} month Tháng (1-12)
+ * @param {number|string} year Năm
+ * @returns {number} Số ngày trong tháng (28, 29, 30, 31 hoặc 0 nếu tháng không hợp lệ)
+ */
+export function dayInMonth(month, year) {
+  const m = Number(month);
+  const y = Number(year);
+  if (!Number.isInteger(m) || !Number.isInteger(y)) return 0;
+  return getMaxDaysInMonth(m, y);
+}
+export const DayInMonth = dayInMonth;
+
+/**
+ * CheckDate - Hàm kiểm tra tính hợp lệ của ngày chuẩn SWT301 Lab 2 & Lab 3
+ * @param {number|string} day Ngày
+ * @param {number|string} month Tháng
+ * @param {number|string} year Năm
+ * @returns {boolean} true nếu ngày hợp lệ theo lịch, false nếu không hợp lệ
+ */
+export function checkDate(day, month, year) {
+  const d = Number(day);
+  const m = Number(month);
+  const y = Number(year);
+  if (!Number.isInteger(d) || !Number.isInteger(m) || !Number.isInteger(y)) return false;
+  if (m < 1 || m > 12) return false;
+  const maxDays = dayInMonth(m, y);
+  return d >= 1 && d <= maxDays;
+}
+export const CheckDate = checkDate;
+
 export function validateDate(dayInput, monthInput, yearInput) {
   // Chỉ chấp nhận chuỗi chữ số (vd: "29", "08"). Chặn "1e1", "0x10", "5.0", "-3", "".
   const isDigits = value => value !== null && value !== undefined && /^\d+$/.test(String(value).trim());
@@ -74,4 +106,3 @@ export function validateDate(dayInput, monthInput, yearInput) {
     isLeap: leap
   };
 }
-

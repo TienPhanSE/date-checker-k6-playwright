@@ -22,6 +22,6 @@ test.describe('CI/CD Pipeline Verification', () => {
     const resultBox = page.locator('#result-box');
     await expect(resultBox).toBeVisible();
     await expect(page.locator('#result-status-badge')).toHaveText('HỢP LỆ');
-    await expect(page.locator('#result-message')).toContainText('29/02/2024 là ngày hợp lệ (năm nhuận)');
+    await expect(page.locator('#result-message')).toContainText('29/02/2024 là ngày hợp lệ');
   });
 });

@@ -13,7 +13,20 @@ npx playwright install chromium
 npm run test:visual:update
 ```
 
-## Demo 1 — Visual regression (Playwright), 1 terminal
+## Demo 1 — Automated Testing (Playwright: Unit, API, E2E)
+
+```powershell
+# 1. Chạy 31 Unit Test Cases (hàm DayInMonth & CheckDate)
+npm run test:unit          # 31 passed
+
+# 2. Chạy 27 REST API Test Cases (tự động khởi động API server ngầm)
+npm run test:api           # 27 passed
+
+# 3. Chạy 17 E2E UI Test Cases
+npm run test:e2e           # 17 passed
+```
+
+## Demo 2 — Visual regression (Playwright), 1 terminal
 
 ```powershell
 npm run test:visual        # 3 passed
@@ -22,7 +35,7 @@ npm run report             # xem Expected / Actual / Diff, Ctrl + C để tắt
 npm run test:visual        # 3 passed trở lại
 ```
 
-## Demo 2 — Performance (k6), 2 terminal
+## Demo 3 — Performance (k6), 2 terminal
 
 Terminal 1 (để nguyên, không tắt):
 ```powershell

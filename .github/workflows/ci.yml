@@ -2,9 +2,9 @@ name: CI/CD Pipeline - Date Checker
 
 on:
   push:
-    branches: [ main, master, CICDtest ]
+    branches: [ main, master, CICDtest, '**' ]
   pull_request:
-    branches: [ main, master, CICDtest ]
+    branches: [ main, master, CICDtest, '**' ]
 
 jobs:
   test:
@@ -15,11 +15,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Cài đặt môi trường Node.js (v18)
+      # 2. Cài đặt môi trường Node.js (v20)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # 3. Cài đặt các thư viện từ package-lock.json
       - name: Install dependencies
@@ -29,17 +29,34 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      # 5. Chạy Playwright E2E Tests
+      # 5. Chạy Playwright Unit Tests (Kiểm thử đơn vị DayInMonth & CheckDate)
+      - name: Run Playwright Unit Tests
+        run: npm run test:unit
+
+      # 6. Chạy Playwright API Tests (Kiểm thử 27 API Test Cases)
+      - name: Run Playwright API Tests
+        run: npm run test:api
+
+      # 7. Chạy Playwright E2E Tests (Kiểm thử giao diện End-to-End)
       - name: Run Playwright E2E Tests
         run: npm run test:e2e
 
-      # 6. Thiết lập K6
+      # 8. Thiết lập Grafana K6
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
 
-      # 7. Khởi động server API và chạy K6 Load Test
+      # 9. Khởi động server API và chạy K6 Load Test (Kiểm thử hiệu năng)
       - name: Run K6 Load Test
         run: |
           npm run api &
           sleep 3
           k6 run --duration 10s tests/performance/load.js
+
+      # 10. Tải lên Playwright Report làm Artifact (xem được trên GitHub khi cần)
+      - name: Upload Playwright Test Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
