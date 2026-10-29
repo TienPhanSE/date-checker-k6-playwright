@@ -10,6 +10,8 @@
     "test:unit": "playwright test tests/unit",
     "test:api": "playwright test tests/api",
     "test:e2e": "playwright test tests/e2e",
+    "test:mobile": "playwright test tests/mobile",
+    "test:appium": "node tests/mobile/android.mjs",
     "api": "node server/index.js",
     "api:slow": "node server/index.js --slow",
     "test:visual": "playwright test tests/visual",

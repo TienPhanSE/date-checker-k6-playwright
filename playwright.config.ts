@@ -14,13 +14,20 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: /.*\.api\.spec\.ts/,
+      testIgnore: [/.*\.api\.spec\.ts/, /.*mobile.*/],
     },
     {
       name: 'api',
       testMatch: /.*\.api\.spec\.ts/,
       use: {
         baseURL: 'http://127.0.0.1:3001',
+      },
+    },
+    {
+      name: 'mobile',
+      testMatch: /.*mobile-web\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
       },
     },
   ],
