@@ -4,30 +4,38 @@ import { remote } from 'webdriverio';
 /**
  * Mobile Web Automation Test trên Android Emulator (Chrome Browser)
  * Yêu cầu:
- * 1. Khởi động máy ảo Android trong Android Studio (Device Manager)
+ * 1. Khởi động máy ảo Android trong Android Studio (Device Manager) hoặc cắm điện thoại thật (bật USB Debugging)
  * 2. Khởi động Web App: npm run dev -- --host 0.0.0.0 --port 5173
  * 3. Khởi động Appium: npx appium
- * 4. Chạy file này: node tests/mobile/android.mjs
+ * 4. Chạy file này: npm run test:appium
  */
 
-const udid = process.env.ANDROID_UDID || 'emulator-5554';
 const webUrl = process.env.MOBILE_BASE_URL || 'http://10.0.2.2:5173';
+const udid = process.env.ANDROID_UDID;
 
-console.log(`[INFO] Kết nối với thiết bị: ${udid}`);
+console.log(`[INFO] Thiết bị chỉ định: ${udid || 'Tự động phát hiện thiết bị đang kết nối'}`);
 console.log(`[INFO] Truy cập Web App: ${webUrl}`);
+
+const capabilities = {
+  platformName: 'Android',
+  browserName: 'Chrome',
+  'appium:automationName': 'UiAutomator2',
+  'appium:deviceName': 'Android Emulator',
+  'appium:newCommandTimeout': 240,
+  'appium:chromedriverAutodownload': true,
+  'wdio:enforceWebDriverClassic': true,
+};
+
+if (udid) {
+  capabilities['appium:udid'] = udid;
+}
 
 const driver = await remote({
   hostname: '127.0.0.1',
   port: 4723,
   path: '/',
-  capabilities: {
-    platformName: 'Android',
-    browserName: 'Chrome',
-    'appium:automationName': 'UiAutomator2',
-    'appium:deviceName': 'Android Emulator',
-    'appium:udid': udid,
-    'appium:newCommandTimeout': 240,
-  },
+  capabilities,
+  enableBiDi: false,
 });
 
 try {

@@ -107,9 +107,9 @@ Tự động mở trình duyệt Chrome trên máy ảo Android thật để ch�
    ```powershell
    npm run dev -- --host 0.0.0.0 --port 5173
    ```
-3. **Terminal 2:** Bật Appium Server:
+3. **Terminal 2:** Bật Appium Server (cho phép tự tải Chromedriver tương ứng với Chrome máy ảo):
    ```powershell
-   npx appium
+   npx appium --allow-insecure *:chromedriver_autodownload
    ```
 4. **Terminal 3:** Khởi chạy kịch bản kiểm thử:
    ```powershell
